@@ -19,7 +19,6 @@ df_final = pd.DataFrame(data_list)
 df_final.set_index('OBJECTID')
 df_final = df_final[
     ["Country_Region", "Province_State", "Lat", "Long_", "Confirmed", "Deaths", "Recovered", "Last_Update"]]
-print(df_final.head())
 
 
 # Cleaning Data
@@ -36,3 +35,33 @@ df_final["Last_Update"] = df_final["Last_Update"] / 1000
 df_final["Last_Update"] = df_final["Last_Update"].apply(convert_time)
 
 print(df_final.head())
+
+# Aggregating data
+
+df_total = df_final.groupby('Country_Region', as_index=False).agg(
+    {
+        "Confirmed": "sum",
+        "Deaths": "sum",
+        "Recovered": "sum"
+    }
+)
+
+# The calculation of daily total of COVID-19 cases at the global level
+
+total_confirmed = df_final["Confirmed"].sum()
+total_recovered = df_final["Recovered"].sum()
+total_deaths = df_final["Deaths"].sum()
+
+df_top10 = df_total.nlargest(10, "Confirmed")
+top10_countries_confirmed = df_top10["Country_Region"].tolist()
+top10_confirmed = df_top10["Confirmed"].tolist()
+
+df_top10 = df_total.nlargest(10, "Recovered")
+top10_countries_recovered = df_top10["Country_Region"].tolist()
+top10_recovered = df_top10["Recovered"].tolist()
+
+df_top10 = df_total.nlargest(10, "Deaths")
+top10_countries_deaths = df_top10["Country_Region"].tolist()
+top10_deaths = df_top10["Deaths"].tolist()
+
+# Building a dashboard using Python Plotly Subplots
