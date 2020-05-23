@@ -34,8 +34,6 @@ df_final['Province_State'].fillna(value='', inplace=True)
 df_final["Last_Update"] = df_final["Last_Update"] / 1000
 df_final["Last_Update"] = df_final["Last_Update"].apply(convert_time)
 
-print(df_final.head())
-
 # Aggregating data
 
 df_total = df_final.groupby('Country_Region', as_index=False).agg(
@@ -147,3 +145,66 @@ figure.add_trace(
     ),
     row=1, col=6
 )
+
+# Creating subplots — Bar Charts
+
+figure.add_trace(
+    go.Bar(
+        x=top10_countries_confirmed,
+        y=top10_confirmed,
+        name="Confirmed Cases",
+        marker=dict(color="Yellow"),
+        showlegend=True,
+    ),
+    row=2, col=4
+)
+
+figure.add_trace(
+    go.Bar(
+        x=top10_countries_recovered,
+        y=top10_recovered,
+        name="Recovered Cases",
+        marker=dict(color="Green"),
+        showlegend=True),
+    row=3, col=4
+)
+
+figure.add_trace(
+    go.Bar(
+        x=top10_countries_deaths,
+        y=top10_deaths,
+        name="Deaths Cases",
+        marker=dict(color="crimson"),
+        showlegend=True),
+    row=4, col=4
+)
+
+# Final layout settings
+
+figure.update_layout(
+    template="plotly_dark",
+    title="Global COVID-19 Cases (Last Updated: " + str(df_final["Last_Update"][0]) + ")",
+    showlegend=True,
+    legend_orientation="h",
+    legend=dict(x=0.65, y=0.8),
+    geo=dict(
+        projection_type="orthographic",
+        showcoastlines=True,
+        landcolor="white",
+        showland=True,
+        showocean=True,
+        lakecolor="LightBlue"
+    ),
+
+    annotations=[
+        dict(
+            text="Source: https://bit.ly/2WUrgoh",
+            showarrow=False,
+            xref="paper",
+            yref="paper",
+            x=0.35,
+            y=0)
+    ]
+)
+
+figure.write_html('first_figure.html', auto_open=True)
